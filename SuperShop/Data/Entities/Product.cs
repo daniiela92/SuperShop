@@ -8,6 +8,8 @@ namespace SuperShop.Data.Entities
 
         public int Id { get; set; }
 
+        [Required] // Preenchimento obrigatório
+        [MaxLength(50, ErrorMessage = "The field {0} can contain {1} characters lenght.")] // Tamanho máximo de 50 caracteres
         public string Name { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
@@ -17,10 +19,10 @@ namespace SuperShop.Data.Entities
         public string ImageUrl { get; set; }
 
         [Display(Name = "Last Purchase")]
-        public DateTime LastPurchase { get; set; }
+        public DateTime? LastPurchase { get; set; } // com o ? indica que é opcional
 
         [Display(Name = "Last Sale")]
-        public DateTime LastSale { get; set; }
+        public DateTime? LastSale { get; set; } // com o ? indica que é opcional
 
         [Display(Name = "Is Available")]
         public bool IsAvailable { get; set; }

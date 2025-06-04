@@ -18,7 +18,7 @@ namespace SuperShop.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index() // a única coisa que faz é retornar uma lista de produtos
         {
             return View(await _context.Products.ToListAsync());
         }
@@ -64,7 +64,7 @@ namespace SuperShop.Controllers
         }
 
         // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id) //tem o ? para não forçar o utilizador a colocar um ID
         {
             if (id == null)
             {
@@ -72,6 +72,8 @@ namespace SuperShop.Controllers
             }
 
             var product = await _context.Products.FindAsync(id);
+            // FindAsync é usado para procurar um produto pelo ID, se não encontrar retorna null. 
+            //
             if (product == null)
             {
                 return NotFound();
@@ -115,35 +117,36 @@ namespace SuperShop.Controllers
         }
 
         // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id) // não apaga, só mostra o que for para apagar. Por defeito usa um GET
         {
-            if (id == null)
+            if (id == null) // se o ID for nulo, retorna NotFound
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            var product = await _context.Products // procura o produto pelo ID, se não encontrar retorna null
+                .FirstOrDefaultAsync(m => m.Id == id); // FirstOrDefaultAsync retorna o primeiro produto
+                                                       // que corresponde ao ID ou null se não encontrar
+            if (product == null) // se o produto for nulo, retorna NotFound
             {
-                return NotFound();
+                return NotFound(); 
             }
 
-            return View(product);
+            return View(product); // retorna a view com o produto para ser confirmado o delete
         }
 
         // POST: Products/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Delete")] //especifica que quando há uma action Delete que seja feita com Post, chama o DeleteConfirmed
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var product = await _context.Products.FindAsync(id); // antes de apagar ainda vai verificar se o produto existe
+            _context.Products.Remove(product);  // Remove o produto do contexto
+            await _context.SaveChangesAsync();  // Salva as alterações no banco de dados
+            return RedirectToAction(nameof(Index)); // Redireciona para a lista de produtos
         }
 
-        private bool ProductExists(int id)
+        private bool ProductExists(int id) // verifica se o produto existe no banco de dados, método auxiliar
         {
             return _context.Products.Any(e => e.Id == id);
         }
