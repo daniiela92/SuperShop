@@ -30,6 +30,8 @@ namespace SuperShop
                                              // Isso permite que o serviço seja resolvido e utilizado
                                              // em outros lugares da aplicação, como no método de seeding do banco de dados.
 
+            services.AddScoped<IRepository, Repository>(); // Compila o interface do repositório com a implementação Repository.
+                                                           // Isso permite que o repositório seja injetado em controladores e outros serviços.
 
             services.AddControllersWithViews();
         }
