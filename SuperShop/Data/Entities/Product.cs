@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SuperShop.Data.Entities
 {
-    public class Product
+    public class Product : IEntity // Implementa a interface IEntity para garantir que a classe Product tenha um
+                                   // identificador único e outras propriedades definidas na interface.
     {
 
         public int Id { get; set; }

@@ -1,38 +1,39 @@
-﻿using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SuperShop.Data;
 using SuperShop.Data.Entities;
+using System.Threading.Tasks;
+
 
 
 namespace SuperShop.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly IRepository _repository;
 
-        public ProductsController(IRepository repository)
+        private readonly IProductRepository _productRepository;
+
+        public ProductsController(IProductRepository productRepository)
         {
-            _repository = repository;
+
+            _productRepository = productRepository;
         }
 
         // GET: Products
         public IActionResult Index() // a única coisa que faz é retornar uma lista de produtos
         {
-            return View(_repository.GetProducts()); 
+            return View(_productRepository.GetAll());
         }
 
         // GET: Products/Details/5
-        public IActionResult Details(int? id) // o ? indica que o ID é opcional, ou seja, pode ser nulo
+        public async Task<IActionResult> Details(int? id) // o ? indica que o ID é opcional, ou seja, pode ser nulo
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = _repository.GetProduct(id.Value); // procura o produto pelo ID
+            var product = await _productRepository.GetByIdAsync(id.Value); // procura o produto pelo ID
 
             if (product == null)
             {
@@ -43,7 +44,7 @@ namespace SuperShop.Controllers
         }
 
         // GET: Products/Create
-        public IActionResult Create()
+        public IActionResult Create() // só chama a View e mostra o Form para ser preenchido
         {
             return View();
         }
@@ -57,23 +58,26 @@ namespace SuperShop.Controllers
         {
             if (ModelState.IsValid)
             {
-                _repository.AddProduct(product); // adiciona o produto ao repositório
-                await _repository.SaveAllAsync(); // salva as alterações no banco de dados
+                await _productRepository.CreateAsync(product); // chama o método CreateAsync do repositório
+                                                               // para adicionar o produto
+
                 return RedirectToAction(nameof(Index)); // redireciona para a lista de produtos
             }
+
             return View(product); // se o modelo não for válido, retorna a view com o produto para corrigir os erros
         }
 
         // GET: Products/Edit/5
-        public IActionResult Edit(int? id) //tem o ? para não forçar o utilizador a colocar um ID
+        public async Task<IActionResult> Edit(int? id) //tem o ? para não forçar o utilizador a colocar um ID
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var product = _repository.GetProduct(id.Value); // procura o produto pelo ID, se não encontrar retorna null
-            
+            var product = await _productRepository.GetByIdAsync(id.Value); // procura o produto pelo ID, se não
+                                                                           // encontrar retorna null
+
             if (product == null)
             {
                 return NotFound();
@@ -97,12 +101,13 @@ namespace SuperShop.Controllers
             {
                 try
                 {
-                    _repository.UpdateProduct(product);
-                    await _repository.SaveAllAsync();
+                    await _productRepository.UpdateAsync(product); // chama o método UpdateProduct do
+                                                                   // repositório para atualizar o produto
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_repository.ProductExists(product.Id)) // verifica se o produto existe no banco de dados
+                    if (!await _productRepository.ExistAsync(product.Id)) // verifica se o produto existe no banco de dados
                     {
                         return NotFound();
                     }
@@ -117,18 +122,18 @@ namespace SuperShop.Controllers
         }
 
         // GET: Products/Delete/5
-        public IActionResult Delete(int? id) // não apaga, só mostra o que for para apagar. Por defeito usa um GET
+        public async Task<IActionResult> Delete(int? id) // não apaga, só mostra o que for para apagar. Por defeito usa um GET
         {
             if (id == null) // se o ID for nulo, retorna NotFound
             {
                 return NotFound();
             }
 
-            var product = _repository.GetProduct(id.Value); // procura o produto pelo ID no repositório
+            var product = await _productRepository.GetByIdAsync(id.Value); // procura o produto pelo ID no repositório
 
             if (product == null) // se o produto for nulo, retorna NotFound
             {
-                return NotFound(); 
+                return NotFound();
             }
 
             return View(product); // retorna a view com o produto para ser confirmado o delete
@@ -139,9 +144,8 @@ namespace SuperShop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = _repository.GetProduct(id); // procura o produto pelo ID no repositório
-            _repository.RemoveProduct(product);  // Remove o produto do contexto
-            await _repository.SaveAllAsync();  // Salva as alterações no banco de dados
+            var product = await _productRepository.GetByIdAsync(id); // procura o produto pelo ID no repositório
+            await _productRepository.DeleteAsync(product);  // Remove o produto do contexto
             return RedirectToAction(nameof(Index)); // Redireciona para a lista de produtos
         }
     }
