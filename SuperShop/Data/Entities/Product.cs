@@ -33,5 +33,18 @@ namespace SuperShop.Data.Entities
 
         public User User { get; set; } // Propriedade de navegação para a entidade User, que representa o utilizador associado ao produto
 
+        public string ImageFullPath
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(ImageUrl))
+                {
+                    return null;
+                }
+
+                return $"https://localhost:44360{ImageUrl.Substring(1)}";
+            }
+        }
+
     }
 }

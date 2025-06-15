@@ -1,4 +1,5 @@
 ﻿using SuperShop.Data.Entities;
+using System.Linq;
 
 namespace SuperShop.Data
 {
@@ -6,6 +7,7 @@ namespace SuperShop.Data
                                                                        // que herda de IGenericRepository<Product>
     {
 
+        public IQueryable GetAllWithUsers(); // Método para obter todos os produtos com os utilizadores associados
 
     }
 }
