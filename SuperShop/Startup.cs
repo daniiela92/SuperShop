@@ -44,11 +44,12 @@ namespace SuperShop
             services.AddTransient<SeedDb>(); // Adiciona o serviço SeedDb para injeção de dependências.
                                              // Isso permite que o serviço seja resolvido e utilizado
                                              // em outros lugares da aplicação, como no método de seeding do banco de dados.
-            
-            services.AddScoped<IUserHelper, UserHelper>(); // Regista a interface IUserHelper com a implementação UserHelper.
-                                                           // Isso permite que o UserHelper seja injetado em controladores e outros serviços.
 
 
+            // Adiciona os serviços personalizados para injeção de dependências.
+            services.AddScoped<IUserHelper, UserHelper>(); 
+            services.AddScoped<IImageHelper, ImageHelper>(); 
+            services.AddScoped<IConverterHelper, ConverterHelper>(); 
             services.AddScoped<IProductRepository, ProductRepository>(); // Compila o interface do repositório com a implementação Repository.
                                                            // Isso permite que o repositório seja injetado em controladores e outros serviços.
 
