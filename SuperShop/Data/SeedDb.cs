@@ -2,7 +2,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.IIS.Core;
 using SuperShop.Data.Entities;
+using SuperShop.Helpers;
 
 
 namespace SuperShop.Data
@@ -10,31 +13,54 @@ namespace SuperShop.Data
     public class SeedDb
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
         private Random _random;
 
-        public SeedDb(DataContext context)
+        public SeedDb(DataContext context, IUserHelper userHelper )
         {
            _context = context;
-           _random = new Random();
+            _userHelper = userHelper;
+            _random = new Random();
         }
 
         public async Task SeedAsync()
         {
             await _context.Database.EnsureCreatedAsync(); // verifica se a BD está criada, se não estiver cria a BD
 
-            if(!_context.Products.Any())
-            {
-                AddProduct("iPhone X");
-                AddProduct("Magic Mouse");
-                AddProduct("iWatch Series 4");
-                AddProduct("iPad Mini");
+            var user = await _userHelper.GetUserByEmailAsync("rafaasfs@gmail.com");
 
-                await _context.SaveChangesAsync();
+            if (user == null)
+            {
+                user = new User
+                {
+                    FirstName = "Rafael",
+                    LastName = "Santos",
+                    Email = "rafaasfs@gmail.com",
+                    UserName = "rafaasfs@gmail.com",
+                    PhoneNumber = "123456789",
+                };
+
+                var result = await _userHelper.AddUserAsync(user, "123456");
+
+                if (result != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the user in seeder");
+                }
+
+                if (!_context.Products.Any())
+                {
+                    AddProduct("iPhone X", user);
+                    AddProduct("Magic Mouse", user);
+                    AddProduct("iWatch Series 4", user);
+                    AddProduct("iPad Mini", user);
+
+                    await _context.SaveChangesAsync();
+                }
             }
             
         }
 
-        private void AddProduct(string name)
+        private void AddProduct(string name, User user)
         {
             _context.Products.Add(new Product
             {
@@ -43,6 +69,7 @@ namespace SuperShop.Data
                 Price = _random.Next(1000),
                 IsAvailable = true,
                 Stock = _random.Next(100),
+                User = user,
 
 
             });
