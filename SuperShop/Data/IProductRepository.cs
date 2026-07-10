@@ -1,11 +1,13 @@
-﻿using SuperShop.Data.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using SuperShop.Data.Entities;
+using System.Linq;
 
 namespace SuperShop.Data
 {
     public interface IProductRepository: IGenericRepository<Product>
     {
 
-
+        public IQueryable GetAllWithUsers();
 
     }
 }
