@@ -32,7 +32,7 @@ namespace SuperShop.Data.Entities
         public User User { get; set; }
 
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://supershopdrbp.somee.com/images/noimage.png"
+            ? $"http://supershopdrbp.somee.com/images/noimage.png"
             : $"https://supershopdrbp.blob.core.windows.net/products/{ImageId}";
 
 
