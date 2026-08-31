@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.IIS.Core;
+using Microsoft.EntityFrameworkCore;
 using SuperShop.Data.Entities;
 using SuperShop.Helpers;
 
@@ -25,7 +26,7 @@ namespace SuperShop.Data
 
         public async Task SeedAsync()
         {
-            await _context.Database.EnsureCreatedAsync(); // verifica se a BD está criada, se não estiver cria a BD
+            await _context.Database.MigrateAsync(); 
 
             await _userHelper.CheckRoleAsync("Admin");
             await _userHelper.CheckRoleAsync("Customer");
