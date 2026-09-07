@@ -20,5 +20,9 @@ namespace SuperShop.Data
 
         Task<bool> ConfirmOrderAsync(string userName);
 
+        Task DeliverOrder(DeliveryViewModel model);
+
+        Task<Order> GetOrderAsync(int id);
+
     }
 }
